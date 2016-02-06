@@ -97,7 +97,7 @@ public class StatewiseDetailsServiceImpl implements StatewiseDetailsService {
 		info.setCasesDueToMalaria(Long.valueOf(data[DatasetFieldConstants.MALARIA_CASES_INDEX]));
 		info.setDeathsDueToMalaria(Long.valueOf(data[DatasetFieldConstants.MALARIA_DEATHS_INDEX]));
 		info.setCasesDueToRespInfection(Long.valueOf(data[DatasetFieldConstants.RESPIRATORY_CASES_INDEX]));
-		info.setCasesDueToRespInfection(Long.valueOf(data[DatasetFieldConstants.RESPIRATORY_DEATHS_INDEX]));
+		info.setDeathsDueToRespInfection(Long.valueOf(data[DatasetFieldConstants.RESPIRATORY_DEATHS_INDEX]));
 		info.setCasesDueToEncephalitis(Long.valueOf(data[DatasetFieldConstants.ENCEPHALITITS_CASES_INDEX]));
 		info.setDeathsDueToEncephalitis(Long.valueOf(data[DatasetFieldConstants.ENCEPHALITITS_DEATHS_INDEX]));
 		info.setCasesDueToHepatitis(Long.valueOf(data[DatasetFieldConstants.HEPATITIS_CASES_INDEX]));
