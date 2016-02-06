@@ -4,6 +4,10 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 
+/*
+ * There is a particular reason why I did not create a set or list of StatewiseDetails DTO
+ * and created a separate object for each state. ;) :)
+ */
 @JsonAutoDetect(fieldVisibility = Visibility.ANY, getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class AllStatesDetailsDTO {
 

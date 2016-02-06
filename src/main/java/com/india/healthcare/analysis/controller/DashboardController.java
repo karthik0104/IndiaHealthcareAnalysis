@@ -12,7 +12,7 @@ import com.india.healthcare.analysis.service.StatewiseDetailsService;
 @RestController
 public class DashboardController {    
     private final StatewiseDetailsService statewiseDetailsService;
-    
+
     @Inject
     public DashboardController(final StatewiseDetailsService statewiseDetailsService) {
     	this.statewiseDetailsService = statewiseDetailsService;
@@ -22,4 +22,5 @@ public class DashboardController {
     public AllStatesDetailsDTO viewDetails() {
     	return statewiseDetailsService.getAllStatesDetails();
     }
+    
 }
