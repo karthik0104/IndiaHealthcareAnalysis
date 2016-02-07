@@ -91,6 +91,8 @@ public class StatewiseDetailsServiceImpl implements StatewiseDetailsService {
 		
 		data = preprocessData(data);
 		
+		stateDetails.setName(data[DatasetFieldConstants.STATE_NAME_INDEX]);
+		
 		CasesAndDeathsDTO info = new CasesAndDeathsDTO();
 		info.setCasesDueToDiarrhoea(Long.valueOf(data[DatasetFieldConstants.DIARRHOEA_CASES_INDEX]));
 		info.setDeathsDueToDiarrhoea(Long.valueOf(data[DatasetFieldConstants.DIARRHOEA_DEATHS_INDEX]));

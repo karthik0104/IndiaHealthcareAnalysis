@@ -4,8 +4,17 @@ package com.india.healthcare.analysis.dto;
  * This is the DTO containing statewise details of case and deaths due to various diseases.
  */
 public class StatewiseDetailsDTO {
+	String name;
 	CasesAndDeathsDTO details;
 	
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
 	public CasesAndDeathsDTO getDetails() {
 		return details;
 	}
