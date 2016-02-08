@@ -6,6 +6,7 @@ package com.india.healthcare.analysis.dto;
 public class StatewiseDetailsDTO {
 	String name;
 	CasesAndDeathsDTO details;
+	PercentImpactDTO percentImpact;
 	
 	public String getName() {
 		return name;
@@ -22,4 +23,13 @@ public class StatewiseDetailsDTO {
 	public void setDetails(CasesAndDeathsDTO details) {
 		this.details = details;
 	}
+
+	public PercentImpactDTO getPercentImpact() {
+		return percentImpact;
+	}
+
+	public void setPercentImpact(PercentImpactDTO percentImpact) {
+		this.percentImpact = percentImpact;
+	}
+	
 }

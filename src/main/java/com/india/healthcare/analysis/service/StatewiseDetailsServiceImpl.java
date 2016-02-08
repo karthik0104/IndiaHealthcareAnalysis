@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,20 +17,21 @@ import org.springframework.validation.annotation.Validated;
 import com.india.healthcare.analysis.constants.DatasetFieldConstants;
 import com.india.healthcare.analysis.dto.AllStatesDetailsDTO;
 import com.india.healthcare.analysis.dto.CasesAndDeathsDTO;
+import com.india.healthcare.analysis.dto.PercentImpactDTO;
 import com.india.healthcare.analysis.dto.StatewiseDetailsDTO;
 
 @Service
 @Validated
 public class StatewiseDetailsServiceImpl implements StatewiseDetailsService {
-	
-	private static final Logger LOGGER = LoggerFactory.getLogger(StatewiseDetailsServiceImpl.class);
+
+	private static final Logger LOGGER = LoggerFactory
+			.getLogger(StatewiseDetailsServiceImpl.class);
 	private static Map<String, StatewiseDetailsDTO> statewiseDetailsMap = new HashMap<String, StatewiseDetailsDTO>();
 	private static final String CASES_DEATHS_CSV_FILE = "Cases_Deaths.csv";
 	private static final String DELIMITER = ",";
-	private static final String REPLACEMENT_STRING = "0";
-	
+
 	private static AllStatesDetailsDTO allStatesDetailsDTO;
-	
+
 	static {
 		populateAdditionalStateInfo();
 		setAllStatesDetailsDTO();
@@ -39,19 +41,19 @@ public class StatewiseDetailsServiceImpl implements StatewiseDetailsService {
 	public AllStatesDetailsDTO getAllStatesDetails() {
 		return allStatesDetailsDTO;
 	}
-	
+
 	/*
-	 * This method extracts data from our datasets and populates it in our
-	 * DTOs.
+	 * This method extracts data from our datasets and populates it in our DTOs.
 	 */
 	private static void populateAdditionalStateInfo() {
 		BufferedReader reader = getDatasetStreamReader();
 		createStateProfileFromDataset(reader);
-		
+
 	}
-	
+
 	private static BufferedReader getDatasetStreamReader() {
-		URL fileUrl = Thread.currentThread().getContextClassLoader().getResource(CASES_DEATHS_CSV_FILE);
+		URL fileUrl = Thread.currentThread().getContextClassLoader()
+				.getResource(CASES_DEATHS_CSV_FILE);
 		BufferedReader br = null;
 		try {
 			br = new BufferedReader(new InputStreamReader(fileUrl.openStream()));
@@ -60,19 +62,19 @@ public class StatewiseDetailsServiceImpl implements StatewiseDetailsService {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 		return br;
 	}
-	
+
 	/*
-	 * This method reads each line of the dataset and populates the information 
+	 * This method reads each line of the dataset and populates the information
 	 * in the State DTOs.
 	 */
 	private static void createStateProfileFromDataset(BufferedReader reader) {
 		String line;
 		try {
 			line = reader.readLine();
-			while((line = reader.readLine()) != null) {
+			while ((line = reader.readLine()) != null) {
 				String[] data = line.split(DELIMITER);
 				createSingleStateProfile(data);
 			}
@@ -80,7 +82,7 @@ public class StatewiseDetailsServiceImpl implements StatewiseDetailsService {
 			e.printStackTrace();
 		}
 	}
-	
+
 	private static void createSingleStateProfile(String[] data) {
 		/*
 		 * Parse the State Code from the data and assign the corresponding state information to 
@@ -89,7 +91,7 @@ public class StatewiseDetailsServiceImpl implements StatewiseDetailsService {
 		String stateCode = data[DatasetFieldConstants.STATE_CODE_INDEX];
 		StatewiseDetailsDTO stateDetails = new StatewiseDetailsDTO();
 		
-		data = preprocessData(data);
+		data = DataProcessorUtil.preprocessData(data);
 		
 		stateDetails.setName(data[DatasetFieldConstants.STATE_NAME_INDEX]);
 		
@@ -105,26 +107,25 @@ public class StatewiseDetailsServiceImpl implements StatewiseDetailsService {
 		info.setCasesDueToHepatitis(Long.valueOf(data[DatasetFieldConstants.HEPATITIS_CASES_INDEX]));
 		info.setDeathsDueToHepatitis(Long.valueOf(data[DatasetFieldConstants.HEPATITIS_DEATHS_INDEX]));
 		
+		PercentImpactDTO percentImpacts = new PercentImpactDTO();
+		percentImpacts.setDiarrhoeaImpact(Double.toString(DataProcessorUtil.getImpactPercentage(data, Arrays.asList(DatasetFieldConstants.DIARRHOEA_CASES_INDEX,
+				DatasetFieldConstants.DIARRHOEA_DEATHS_INDEX))));
+		percentImpacts.setMalariaImpact(Double.toString(DataProcessorUtil.getImpactPercentage(data, Arrays.asList(DatasetFieldConstants.MALARIA_CASES_INDEX,
+				DatasetFieldConstants.MALARIA_DEATHS_INDEX))));
+		percentImpacts.setRespInfectionImpact(Double.toString(DataProcessorUtil.getImpactPercentage(data, Arrays.asList(DatasetFieldConstants.RESPIRATORY_CASES_INDEX,
+				DatasetFieldConstants.RESPIRATORY_DEATHS_INDEX))));
+		percentImpacts.setEncephalitisImpact(Double.toString(DataProcessorUtil.getImpactPercentage(data, Arrays.asList(DatasetFieldConstants.ENCEPHALITITS_CASES_INDEX,
+				DatasetFieldConstants.ENCEPHALITITS_DEATHS_INDEX))));
+		percentImpacts.setHepatitisImpact(Double.toString(DataProcessorUtil.getImpactPercentage(data, Arrays.asList(DatasetFieldConstants.HEPATITIS_CASES_INDEX,
+				DatasetFieldConstants.HEPATITIS_DEATHS_INDEX))));
+		
 		stateDetails.setDetails(info);
+		stateDetails.setPercentImpact(percentImpacts);
 		
 		//Put this DTO into the map
 		statewiseDetailsMap.put(stateCode, stateDetails);
 	}
-	
-	/*
-	 * This method is to preprocess the line of data to check whether it contains 
-	 * invalid values. If it does, then replace it by the Replacement string.
-	 */
-	private static String[] preprocessData(String[] data) {
-		for(int counter = DatasetFieldConstants.LOWER_DATA_INDEX; counter <= DatasetFieldConstants.HIGHER_DATA_INDEX; counter++) {
-			if(DatasetFieldConstants.INVALID_VALUES.contains(data[counter])) {
-				data[counter] = REPLACEMENT_STRING;
-			}
-		}
-		
-		return data;
-	}
-	
+
 	private static void setAllStatesDetailsDTO() {
 		allStatesDetailsDTO = new AllStatesDetailsDTO();
 		allStatesDetailsDTO.setMH(statewiseDetailsMap.get("MH"));

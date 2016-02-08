@@ -24,4 +24,7 @@ public class DatasetFieldConstants {
 	public static final int LOWER_DATA_INDEX = 2;
 	public static final int HIGHER_DATA_INDEX = 11;
 	public static final List<String> INVALID_VALUES = Arrays.asList("NULL", "NA", ""); 
+	public static final List<String> ILLNESS_LIST = Arrays.asList("DIARRHOEA", "MALARIA",
+			"RESPIRATORY_INFECTION", "ENCEPHALITIS", "HEPATITIS");
+			
 }
