@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.india.healthcare.analysis.dto.AllStatesDetailsDTO;
+import com.india.healthcare.analysis.dto.TopOverallDTO;
 import com.india.healthcare.analysis.service.StatewiseDetailsService;
 
 @RestController
@@ -21,6 +22,11 @@ public class DashboardController {
     @RequestMapping(value="/statewise",method = RequestMethod.GET)
     public AllStatesDetailsDTO viewDetails() {
     	return statewiseDetailsService.getAllStatesDetails();
+    }
+    
+    @RequestMapping(value="/topfiveoverall", method = RequestMethod.GET)
+    public TopOverallDTO getTopOverall() {
+    	return statewiseDetailsService.getTopFiveOverallStatesDetails();
     }
     
 }

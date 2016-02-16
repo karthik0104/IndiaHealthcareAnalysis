@@ -5,8 +5,10 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -19,6 +21,7 @@ import com.india.healthcare.analysis.dto.AllStatesDetailsDTO;
 import com.india.healthcare.analysis.dto.CasesAndDeathsDTO;
 import com.india.healthcare.analysis.dto.PercentImpactDTO;
 import com.india.healthcare.analysis.dto.StatewiseDetailsDTO;
+import com.india.healthcare.analysis.dto.TopOverallDTO;
 
 @Service
 @Validated
@@ -29,6 +32,7 @@ public class StatewiseDetailsServiceImpl implements StatewiseDetailsService {
 	private static Map<String, StatewiseDetailsDTO> statewiseDetailsMap = new HashMap<String, StatewiseDetailsDTO>();
 	private static final String CASES_DEATHS_CSV_FILE = "Cases_Deaths.csv";
 	private static final String DELIMITER = ",";
+	private static final Integer TOP_STATE_RESULTS_NUMBER = 5;
 
 	private static AllStatesDetailsDTO allStatesDetailsDTO;
 
@@ -91,7 +95,7 @@ public class StatewiseDetailsServiceImpl implements StatewiseDetailsService {
 		String stateCode = data[DatasetFieldConstants.STATE_CODE_INDEX];
 		StatewiseDetailsDTO stateDetails = new StatewiseDetailsDTO();
 		
-		data = DataProcessorUtil.preprocessData(data);
+		data = DataProcessorUtil.preprocessDataRow(data);
 		
 		stateDetails.setName(data[DatasetFieldConstants.STATE_NAME_INDEX]);
 		
@@ -124,6 +128,41 @@ public class StatewiseDetailsServiceImpl implements StatewiseDetailsService {
 		
 		//Put this DTO into the map
 		statewiseDetailsMap.put(stateCode, stateDetails);
+	}
+	
+	@Override
+	public TopOverallDTO getTopFiveOverallStatesDetails() {
+		
+		BufferedReader reader = getDatasetStreamReader();
+		TopOverallDTO topFiveOverall = getTopFiveStatesOverallDetailsFromDataset(reader);
+		topFiveOverall.setCategory("Overall");
+		
+		return topFiveOverall;
+	}
+	
+	private TopOverallDTO getTopFiveStatesOverallDetailsFromDataset(BufferedReader reader) {
+		List<String[]> overallStateDetails = getOverallDetailsFromDataset(reader);
+		overallStateDetails = DataProcessorUtil.preprocessData(overallStateDetails);
+		TopOverallDTO topFiveOverall = DataProcessorUtil.getTopStateDetails(overallStateDetails,
+				DatasetFieldConstants.STATE_NAME_INDEX, DatasetFieldConstants.LOWER_DATA_INDEX,
+				DatasetFieldConstants.HIGHER_DATA_INDEX, TOP_STATE_RESULTS_NUMBER);
+		return topFiveOverall;
+	}
+	
+	private List<String[]> getOverallDetailsFromDataset(BufferedReader reader) {
+		List<String[]> stateDetailsList = new ArrayList<String[]>();
+		String line;
+		try {
+			line = reader.readLine();
+			while ((line = reader.readLine()) != null) {
+				String[] data = line.split(DELIMITER);
+				stateDetailsList.add(data);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return stateDetailsList;
 	}
 
 	private static void setAllStatesDetailsDTO() {
@@ -164,4 +203,5 @@ public class StatewiseDetailsServiceImpl implements StatewiseDetailsService {
 		allStatesDetailsDTO.setDD(statewiseDetailsMap.get("DD"));
 		allStatesDetailsDTO.setLD(statewiseDetailsMap.get("LD"));
 	}
+	
 }
