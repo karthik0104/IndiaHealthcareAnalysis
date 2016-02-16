@@ -92,7 +92,7 @@ public class DataProcessorUtil {
 			listIndex++;
 		}
 		
-		Map<String, Integer> sortedStateValueMap = sortByTotalValue(stateValueMap);
+		Map<String, Integer> sortedStateValueMap = sortByTotalValue(stateValueMap, false);
 		
 		// Get the top "n" results from the map.
 		for (Map.Entry<String, Integer> entry : sortedStateValueMap.entrySet()) {
@@ -113,19 +113,32 @@ public class DataProcessorUtil {
 		return topOverallStateDetails;
 	}
 	
-	private static Map<String, Integer> sortByTotalValue(Map<String, Integer> map) {
+	private static Map<String, Integer> sortByTotalValue(Map<String, Integer> map, Boolean isAscendingOrder) {
 		
 		List<Map.Entry<String, Integer>> list = new LinkedList<Map.Entry<String,Integer>>(map.entrySet());
 		
-		Collections.sort(list, new Comparator<Map.Entry<String, Integer>>() {
+		if(isAscendingOrder) {
+			Collections.sort(list, new Comparator<Map.Entry<String, Integer>>() {
 
-			@Override
-			public int compare(Entry<String, Integer> e1,
-					Entry<String, Integer> e2) {
-				return (e2.getValue()).compareTo(e1.getValue());
-			}
+				@Override
+				public int compare(Entry<String, Integer> e1,
+						Entry<String, Integer> e2) {
+						return (e1.getValue()).compareTo(e2.getValue());
+				}
 			
-		});
+			});
+		}
+		else {
+			Collections.sort(list, new Comparator<Map.Entry<String, Integer>>() {
+
+				@Override
+				public int compare(Entry<String, Integer> e1,
+						Entry<String, Integer> e2) {
+						return (e2.getValue()).compareTo(e1.getValue());
+				}
+			
+			});			
+		}
 		
 		Map<String, Integer> sortedMap = new LinkedHashMap<String, Integer>();
 		for (Iterator<Map.Entry<String, Integer>> it = list.iterator(); it.hasNext();) {
