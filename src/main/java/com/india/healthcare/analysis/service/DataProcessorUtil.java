@@ -21,6 +21,8 @@ import com.india.healthcare.analysis.dto.TopOverallDTO;
 public class DataProcessorUtil {
 	
 	private static final String REPLACEMENT_STRING = "0";
+	private static final Boolean ASCENDING_ORDER = true;
+	private static final Boolean DESCENDING_ORDER = false;
 	
 	/*
 	 * This method is to preprocess the data to check whether it contains 
@@ -92,7 +94,7 @@ public class DataProcessorUtil {
 			listIndex++;
 		}
 		
-		Map<String, Integer> sortedStateValueMap = sortByTotalValue(stateValueMap, false);
+		Map<String, Integer> sortedStateValueMap = sortByTotalValue(stateValueMap, DESCENDING_ORDER);
 		
 		// Get the top "n" results from the map.
 		for (Map.Entry<String, Integer> entry : sortedStateValueMap.entrySet()) {
