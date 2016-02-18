@@ -2,6 +2,7 @@
  * We need to load all the data required for the map and graphs while loading page.
  */
 $(document).ready(function() {
+	
 	//Load the map.
 	loadMap();
 	

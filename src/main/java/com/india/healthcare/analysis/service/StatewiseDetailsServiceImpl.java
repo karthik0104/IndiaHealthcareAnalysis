@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import com.india.healthcare.analysis.constants.DatasetFieldConstants;
+import com.india.healthcare.analysis.constants.IllnessNames;
 import com.india.healthcare.analysis.dto.AllStatesDetailsDTO;
 import com.india.healthcare.analysis.dto.CasesAndDeathsDTO;
 import com.india.healthcare.analysis.dto.PercentImpactDTO;
@@ -33,6 +34,7 @@ public class StatewiseDetailsServiceImpl implements StatewiseDetailsService {
 	private static final String CASES_DEATHS_CSV_FILE = "Cases_Deaths.csv";
 	private static final String DELIMITER = ",";
 	private static final Integer TOP_STATE_RESULTS_NUMBER = 5;
+	private static final String OVERALL = "Overall";
 
 	private static AllStatesDetailsDTO allStatesDetailsDTO;
 
@@ -131,21 +133,65 @@ public class StatewiseDetailsServiceImpl implements StatewiseDetailsService {
 	}
 	
 	@Override
-	public TopOverallDTO getTopFiveOverallStatesDetails() {
+	public TopOverallDTO getTopFiveStatesDetails(IllnessNames illness) {
 		
 		BufferedReader reader = getDatasetStreamReader();
-		TopOverallDTO topFiveOverall = getTopFiveStatesOverallDetailsFromDataset(reader);
-		topFiveOverall.setCategory("Overall");
+		Integer[] columnIndices = getColumnIndices(illness);
+		TopOverallDTO topFiveOverall = getTopFiveStatesDetailsFromDataset(reader, illness, columnIndices[0], columnIndices[1]);
 		
 		return topFiveOverall;
 	}
 	
-	private TopOverallDTO getTopFiveStatesOverallDetailsFromDataset(BufferedReader reader) {
+	private Integer[] getColumnIndices(IllnessNames illness) {
+		
+		Integer[] columnIndices = new Integer[2];
+		
+		switch(illness) {
+		
+			case DIARRHOEA:
+				columnIndices[0] = DatasetFieldConstants.DIARRHOEA_CASES_INDEX;
+				columnIndices[1] = DatasetFieldConstants.DIARRHOEA_DEATHS_INDEX;
+				break;
+				
+			case ENCEPHALITIS:
+				columnIndices[0] = DatasetFieldConstants.ENCEPHALITITS_CASES_INDEX;
+				columnIndices[1] = DatasetFieldConstants.ENCEPHALITITS_DEATHS_INDEX;
+				break;
+				
+			case HEPATITIS:
+				columnIndices[0] = DatasetFieldConstants.HEPATITIS_CASES_INDEX;
+				columnIndices[1] = DatasetFieldConstants.HEPATITIS_DEATHS_INDEX;
+				break;
+				
+			case MALARIA:
+				columnIndices[0] = DatasetFieldConstants.DIARRHOEA_CASES_INDEX;
+				columnIndices[1] = DatasetFieldConstants.DIARRHOEA_DEATHS_INDEX;
+				break;
+				
+			case OVERALL:
+				columnIndices[0] = DatasetFieldConstants.LOWER_DATA_INDEX;
+				columnIndices[1] = DatasetFieldConstants.HIGHER_DATA_INDEX;
+				break;
+				
+			case RESPIRATORY:
+				columnIndices[0] = DatasetFieldConstants.RESPIRATORY_CASES_INDEX;
+				columnIndices[1] = DatasetFieldConstants.RESPIRATORY_DEATHS_INDEX;
+				break;
+				
+			default:
+				break;
+		}
+		
+		return columnIndices;
+	}
+	
+	private TopOverallDTO getTopFiveStatesDetailsFromDataset(BufferedReader reader, IllnessNames illness, int lowerColumnIndex, 
+			int higherColumnIndex) {
 		List<String[]> overallStateDetails = getOverallDetailsFromDataset(reader);
 		overallStateDetails = DataProcessorUtil.preprocessData(overallStateDetails);
 		TopOverallDTO topFiveOverall = DataProcessorUtil.getTopStateDetails(overallStateDetails,
-				DatasetFieldConstants.STATE_NAME_INDEX, DatasetFieldConstants.LOWER_DATA_INDEX,
-				DatasetFieldConstants.HIGHER_DATA_INDEX, TOP_STATE_RESULTS_NUMBER);
+				DatasetFieldConstants.STATE_NAME_INDEX, lowerColumnIndex, higherColumnIndex, TOP_STATE_RESULTS_NUMBER);
+		topFiveOverall.setCategory(illness.getIllnessName());
 		return topFiveOverall;
 	}
 	

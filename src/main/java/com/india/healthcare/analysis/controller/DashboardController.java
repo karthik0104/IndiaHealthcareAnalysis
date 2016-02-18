@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.india.healthcare.analysis.constants.IllnessNames;
 import com.india.healthcare.analysis.dto.AllStatesDetailsDTO;
 import com.india.healthcare.analysis.dto.TopOverallDTO;
 import com.india.healthcare.analysis.service.StatewiseDetailsService;
@@ -35,7 +36,12 @@ public class DashboardController {
     
     @RequestMapping(value="/topfiveoverall", method = RequestMethod.GET)
     public TopOverallDTO getTopOverall() {
-    	return statewiseDetailsService.getTopFiveOverallStatesDetails();
+    	return statewiseDetailsService.getTopFiveStatesDetails(IllnessNames.OVERALL);
+    }
+    
+    @RequestMapping(value="/topfivemalaria", method = RequestMethod.GET)
+    public TopOverallDTO getTopMalaria() {
+    	return statewiseDetailsService.getTopFiveStatesDetails(IllnessNames.MALARIA);
     }
     
 }
